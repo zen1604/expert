@@ -1,59 +1,40 @@
-// app/page.js
-'use client'; // We need client-side code for the modal interaction
+// app/properties/page.js
 
-import { useState } from 'react';
-import PropertyCard from '../../components/PropertyCard';
-import ListingModal from '../../components/ListingModal';
-import { PrismaClient } from '@prisma/client';
-const prisma = new PrismaClient();
+import prisma from '../../lib/prisma';
+import PropertyListings from './PropertyListings';
 
-async function getPropertiesFromDb() {
-  const properties = await prisma.property.findMany({
-    orderBy: { createdAt: 'desc' } // Show newest first
-  });
-  return properties;
-}
+// This is an async Server Component
+export default async function PropertiesPage() {
+    // 1. Fetch live data directly from the database
+    const properties = await prisma.property.findMany({
+        orderBy: {
+            createdAt: 'desc', // Show newest properties first
+        },
+    });
 
-const properties = await getPropertiesFromDb();
-
-export default function HomePage() {
-    const [selectedProperty, setSelectedProperty] = useState(null);
+    // We must rename 'listingType' from the DB to 'type' for the component
+    // And convert the date to a string to pass to the client component
+    const formattedProperties = properties.map(p => ({
+        ...p,
+        type: p.listingType, // Rename field
+        createdAt: p.createdAt.toISOString(), // Convert Date to string
+        updatedAt: p.updatedAt.toISOString(), // Convert Date to string
+    }));
 
     return (
         <>
-            {/* Hero Section */}
-            <section className="hero">
+            <section className="page-header">
                 <div className="container">
-                    <h1 className="hero-title">Find Your Next Commercial Space</h1>
-                    <p className="hero-subtitle">Premium industrial and commercial properties in prime locations</p>
+                    <h1>Our Properties</h1>
                 </div>
             </section>
 
-            {/* Property Listings */}
-            <section className="main-content">
+            <main className="main-content">
                 <div className="container">
-                    <div className="results-header">
-                        <span className="results-count">{properties.length} Results Found</span>
-                    </div>
-
-                    <div className="property-listings">
-                        {properties.map((property) => (
-                            <PropertyCard 
-                                key={property.id} 
-                                property={property} 
-                                onCardClick={setSelectedProperty} 
-                            />
-                        ))}
-                    </div>
+                    {/* 2. Pass the fetched data to the interactive client component */}
+                    <PropertyListings properties={formattedProperties} />
                 </div>
-            </section>
-
-            {/* Modal for Details */}
-            <ListingModal 
-                property={selectedProperty} 
-                onClose={() => setSelectedProperty(null)} 
-            />
+            </main>
         </>
     );
-
 }
