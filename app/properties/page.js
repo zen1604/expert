@@ -4,10 +4,17 @@
 import { useState } from 'react';
 import PropertyCard from '../../components/PropertyCard';
 import ListingModal from '../../components/ListingModal';
-import { getProperties } from '../../lib/data';
+import { PrismaClient } from '@prisma/client';
+const prisma = new PrismaClient();
 
-// Fetch the data on the client side for Phase 1 simulation
-const properties = getProperties(); 
+async function getPropertiesFromDb() {
+  const properties = await prisma.property.findMany({
+    orderBy: { createdAt: 'desc' } // Show newest first
+  });
+  return properties;
+}
+
+const properties = await getPropertiesFromDb();
 
 export default function HomePage() {
     const [selectedProperty, setSelectedProperty] = useState(null);
