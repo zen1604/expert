@@ -2,15 +2,16 @@
   "name": "commercial-expert",
   "version": "0.1.0",
   "private": true,
- "scripts": {
-   "dev": "next dev",
-   "build": "prisma db push && next build",
-   "start": "next start",
-   "lint": "next lint",
-   "postinstall": "prisma generate"
- },
+  "scripts": {
+    "dev": "next dev",
+    "build": "prisma db push && next build",
+    "start": "next start",
+    "lint": "next lint",
+    "postinstall": "prisma generate"
+  },
   "dependencies": {
     "@prisma/client": "^5.16.1",
+    "@vercel/blob": "^0.23.4",
     "bcrypt": "^5.1.1",
     "iron-session": "^8.0.2",
     "next": "14.2.4",
@@ -23,4 +24,3 @@
     "prisma": "^5.16.1"
   }
 }
-
