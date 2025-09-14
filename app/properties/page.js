@@ -2,9 +2,9 @@
 'use client'; // We need client-side code for the modal interaction
 
 import { useState } from 'react';
-import PropertyCard from '../components/PropertyCard';
-import ListingModal from '../components/ListingModal';
-import { getProperties } from '../lib/data';
+import PropertyCard from '../../components/PropertyCard';
+import ListingModal from '../../components/ListingModal';
+import { getProperties } from '../../lib/data';
 
 // Fetch the data on the client side for Phase 1 simulation
 const properties = getProperties(); 
