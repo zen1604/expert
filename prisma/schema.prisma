@@ -1,18 +1,16 @@
 // prisma/schema.prisma
 
-// This block specifies the provider for the Prisma Client (JavaScript/TypeScript)
 generator client {
   provider = "prisma-client-js"
 }
 
-// This block defines our database connection
 datasource db {
-  provider     = "postgresql" // We are using Postgres
-  url          = env("DATABASE_URL") // It gets the connection string from our .env file
+  provider     = "postgresql"
+  // This is the corrected line
+  url          = env("POSTGRES_PRISMA_URL") 
   relationMode = "prisma"
 }
 
-// This is the blueprint for our 'Property' table in the database.
 model Property {
   id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
@@ -25,8 +23,7 @@ model Property {
   listingType String   @map("type")
   status      String   
   imgUrl      String
-  details     String?  // The '?' makes this field optional
+  details     String?  
 
-  // This tells Prisma to create a special index for faster lookups by listingType and status
   @@index([listingType, status])
 }
