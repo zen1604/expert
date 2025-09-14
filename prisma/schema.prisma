@@ -1,0 +1,26 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model Property {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  address     String
+  city        String
+  price       String   // Storing as string to accommodate "$22 / sq ft" etc.
+  category    String
+  listingType String   @map("type") // "FOR SALE" or "FOR LEASE"
+  status      String   // "AVAILABLE", "SOLD", "LEASED"
+  imgUrl      String
+  details     String?  // The '?' makes this field optional
+}
