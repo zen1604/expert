@@ -1,9 +1,12 @@
 // app/admin/property/[id]/edit/page.js
 
-import PropertyForm from '../../PropertyForm';
-import { upsertProperty } from '../../actions';
-import prisma from '../../../../lib/prisma';
-import styles from '../../admin.module.css';
+// Corrected Paths: We are 3 levels deep, so we need to go up 3 times.
+import PropertyForm from '../../../PropertyForm';
+import { upsertProperty } from '../../../actions';
+import styles from '../../../admin.module.css';
+// The prisma lib file is 5 levels up.
+import prisma from '../../../../../lib/prisma';
+
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
