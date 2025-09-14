@@ -1,14 +1,16 @@
 // components/Header.js
-'use client'; // This component requires client-side interactivity
+'use client'; 
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation'; // Import usePathname
 
 export default function Header() {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const pathname = usePathname(); // Get the current path
 
-    // Effect to handle scroll class
+    // ... (keep the useEffect hooks for scroll and theme the same) ...
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 50);
@@ -17,7 +19,6 @@ export default function Header() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Effect to handle theme persistence
     useEffect(() => {
         const storedTheme = localStorage.getItem('theme');
         const isDark = storedTheme === 'dark-mode';
@@ -37,12 +38,13 @@ export default function Header() {
             <div className="container">
                 <Link href="/" className="logo">l<span>e</span>Xpert</Link>
                 <nav className="nav-menu">
-                    <Link href="/" className="active">Properties</Link>
-                    <Link href="#">About</Link>
-                    <Link href="#">Contact</Link>
-                    <Link href="#">Past Transactions</Link>
+                    {/* Dynamically set the 'active' class */}
+                    <Link href="/properties" className={pathname === '/properties' ? 'active' : ''}>Properties</Link>
+                    <Link href="/about" className={pathname === '/about' ? 'active' : ''}>About</Link>
+                    <Link href="/contact" className={pathname === '/contact' ? 'active' : ''}>Contact</Link>
                 </nav>
                 <div className="header-controls">
+                    {/* ... (keep the phone number and theme switch the same) ... */}
                     <a href="tel:514-955-0000" className="phone-number">514-955-0000</a>
                     <div className="theme-switch-wrapper">
                         <label className="theme-switch">
