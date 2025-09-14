@@ -1,0 +1,32 @@
+/* app/admin/admin.module.css */
+.adminContainer {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 25px;
+}
+.adminHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 20px;
+  margin-bottom: 40px;
+}
+.logoutButton {
+  padding: 10px 20px;
+  border: 1px solid var(--border-color);
+  background-color: transparent;
+  color: var(--text-primary);
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.logoutButton:hover {
+  background-color: var(--bg-secondary);
+}
+.dashboardContent {
+  background-color: var(--bg-primary);
+  padding: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+}
