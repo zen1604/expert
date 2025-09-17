@@ -33,39 +33,68 @@ export default function ContactForm() {
     }
   }, [state.success]);
 
-
   // If the submission was successful, we show the success message instead of the form.
+  // Note: We are keeping the form visible to show the success message above it,
+  // but you can uncomment the next two lines to replace the form entirely.
+  /*
   if (state.success) {
     return <p className="success-message">{state.message}</p>;
   }
+  */
 
   return (
-    <form ref={formRef} action={formAction} className="contact-form">
-      <div className="form-group">
-        <label htmlFor="name">Full Name</label>
-        <input type="text" id="name" name="name" required />
-      </div>
-      <div className="form-group">
-        <label htmlFor="email">Email Address</label>
-        <input type="email" id="email" name="email" required />
-      </div>
-      <div className="form-group">
-        <label htmlFor="subject">Subject</label>
-        <input type="text" id="subject" name="subject" required />
-      </div>
-      <div className="form-group">
-        <label htmlFor="message">Message</label>
-        <textarea id="message" name="message" rows="6" required></textarea>
-      </div>
-      
-      <SubmitButton />
-
-      {/* Display error messages from the server, if any */}
-      {!state.success && state.message && (
-        <p style={{ color: 'var(--banner-red)', marginTop: '15px', fontWeight: '500' }}>
+    <>
+      {/* Display success messages from the server, if any */}
+      {state.success && (
+        <p className="success-message" style={{ color: 'var(--success-green)', marginBottom: '15px', fontWeight: '500' }}>
           {state.message}
         </p>
       )}
-    </form>
+
+      <form ref={formRef} action={formAction} className="contact-form">
+        <div className="form-group">
+          <label htmlFor="name">Full Name</label>
+          <input type="text" id="name" name="name" required />
+        </div>
+        <div className="form-group">
+          <label htmlFor="email">Email Address</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        
+        {/* --- ADDED PHONE NUMBER FIELD --- */}
+        <div className="form-group">
+          <label htmlFor="phone">Phone Number</label>
+          <input type="tel" id="phone" name="phone" required />
+        </div>
+
+        {/* --- ADDED TYPE (BUYER/SELLER) FIELD --- */}
+        <div className="form-group">
+          <label htmlFor="type">I am a...</label>
+          <select id="type" name="type" required>
+            <option value="">Please select an option</option>
+            <option value="1">Buyer</option>
+            <option value="2">Seller</option>
+          </select>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="subject">Subject</label>
+          <input type="text" id="subject" name="subject" required />
+        </div>
+        <div className="form-group">
+          <label htmlFor="message">Message</label>
+          <textarea id="message" name="message" rows="6" required></textarea>
+        </div>
+        
+        <SubmitButton />
+
+        {/* Display error messages from the server, if any */}
+        {!state.success && state.message && (
+          <p style={{ color: 'var(--banner-red)', marginTop: '15px', fontWeight: '500' }}>
+            {state.message}
+          </p>
+        )}
+      </form>
+    </>
   );
 }
