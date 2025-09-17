@@ -10,11 +10,12 @@ datasource db {
   relationMode = "prisma"
 }
 
-// This new model will store the URLs for all additional media.
+// New model to store multiple image URLs for each property
 model Media {
   id         String   @id @default(cuid())
   url        String
   propertyId String
+  // This relation ensures that if a Property is deleted, all its Media records are also deleted.
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
 
@@ -32,12 +33,12 @@ model Property {
   category    String
   listingType String   @map("type")
   status      String
-  imgUrl      String   // This will be the main "featured" image
+  imgUrl      String   // This remains as the main "featured" image
   details     String?
-  
-  // --- NEW FIELDS ---
-  isVisible   Boolean  @default(true) // For making listings visible/invisible
-  media       Media[]  // This creates the relationship to multiple media files
+
+  // --- NEW FIELDS ADDED HERE ---
+  isVisible   Boolean  @default(true) // For making listings visible/invisible to the public
+  media       Media[]  // This creates the one-to-many relationship to the Media model
 
   @@index([listingType, status])
 }
