@@ -11,14 +11,13 @@ export default function Footer() {
             <div className="container">
                 <div className={styles.footerContent}>
                     <div className={styles.footerBrand}>
-                        {/* Use the specific class from the footer's CSS module */}
                         <Link href="/" className={styles.logo}>
                             <Image
-                                className="logo-image" // This global class is for the dark mode filter
-                                src="/logo.jpg"
+                                className="logo-image"
+                                src="/logo.svg" // <-- UPDATED to logo.svg
                                 alt="l'eXpert Logo"
-                                width={150}
-                                height={40}
+                                width={150}      // Adjust to your logo's width
+                                height={40}      // Adjust to your logo's height
                             />
                         </Link>
                         <p className={styles.footerSlogan}>Your expert in commercial real estate.</p>
