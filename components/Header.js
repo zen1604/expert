@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { usePathname } from 'next/navigation';
-import styles from './Header.module.css'; // <-- Import the new CSS Module
+import styles from './Header.module.css';
 
 export default function Header() {
     const [isDarkMode, setIsDarkMode] = useState(false);
@@ -35,14 +35,13 @@ export default function Header() {
     return (
         <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
             <div className="container">
-                {/* Use the specific class from the CSS module */}
                 <Link href="/" className={styles.logo}>
                     <Image
-                        className="logo-image" // This global class is for the dark mode filter
-                        src="/logo.jpg"
+                        className="logo-image"
+                        src="/logo.svg"  // <-- UPDATED to logo.svg
                         alt="l'eXpert Logo"
-                        width={150}
-                        height={40}
+                        width={150}      // Adjust to your logo's width
+                        height={40}      // Adjust to your logo's height
                         priority
                     />
                 </Link>
