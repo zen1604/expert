@@ -483,3 +483,26 @@ p {
 .lightbox-prev { left: 20px; }
 .lightbox-next { right: 20px; }
 .lightbox-counter { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.5); color: white; padding: 5px 15px; border-radius: 5px; user-select: none; }
+
+/* APPEND to styles/globals.css */
+
+/* 1. Add a class for the logo image to apply the filter */
+.logo-image {
+    /* This makes the color change smooth instead of an instant flip */
+    transition: filter 0.3s ease-in-out;
+}
+
+/* 2. When dark mode is active, apply the luminance inversion filter to the logo */
+.dark-mode .logo-image {
+    filter: invert(1) hue-rotate(180deg);
+}
+
+/* 3. Remove the default focus outline and add a better one for keyboard users */
+.logo:focus {
+    outline: none;
+}
+.logo:focus-visible {
+    outline: 2px auto var(--accent-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
