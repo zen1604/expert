@@ -39,7 +39,7 @@ export default function Header() {
                 <Link href="/" className="logo">
                     <Image
                         className="logo-image"      // This class enables the filter
-                        src="/logo.jpg"             // Using your JPG file
+                        src="/logo.svg"             // Using your SVG file
                         alt="l'eXpert Logo"
                         width={150}                 // Change to your logo's actual width
                         height={40}                 // Change to your logo's actual height
@@ -53,7 +53,7 @@ export default function Header() {
                     <Link href="/contact" className={pathname === '/contact' ? 'active' : ''}>Contact</Link>
                 </nav>
                 <div className="header-controls">
-                    <a href="tel:514-955-0000" className="phone-number">514-955-0000</a>
+                    <a href="tel:438-527-2765" className="phone-number">438-527-2765</a>
                     <div className="theme-switch-wrapper">
                         <label className="theme-switch">
                             <input 
@@ -73,3 +73,4 @@ export default function Header() {
         </header>
     );
 }
+
