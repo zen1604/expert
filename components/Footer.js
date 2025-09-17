@@ -14,7 +14,7 @@ export default function Footer() {
                         <Link href="/" className="logo">
                             <Image
                                 className="logo-image" // This class enables the filter
-                                src="/logo.jpg"        // Using your JPG file
+                                src="/logo.svg"        // Using your SVG file
                                 alt="l'eXpert Logo"
                                 width={150}            // Change to your logo's actual width
                                 height={40}            // Change to your logo's actual height
@@ -33,8 +33,8 @@ export default function Footer() {
                     </div>
                     <div className={styles.footerContact}>
                         <h4>Contact Info</h4>
-                        <p><i className="fa-solid fa-phone"></i> 514-955-0000</p>
-                        <p><i className="fa-solid fa-envelope"></i> contact@lexpert.com</p>
+                        <p><i className="fa-solid fa-phone"></i> 438-527-2765</p>
+                        <p><i className="fa-solid fa-envelope"></i> azouaou.cherik@exprealty.com</p>
                         <p><i className="fa-solid fa-location-dot"></i> Montreal, QC, Canada</p>
                     </div>
                 </div>
