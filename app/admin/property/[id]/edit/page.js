@@ -1,19 +1,26 @@
 // app/admin/property/[id]/edit/page.js
 
-// Corrected Paths: We are 3 levels deep, so we need to go up 3 times.
 import PropertyForm from '../../../PropertyForm';
 import { upsertProperty } from '../../../actions';
 import styles from '../../../admin.module.css';
-// The prisma lib file is 5 levels up.
 import prisma from '../../../../../lib/prisma';
-
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
 export default async function EditPropertyPage({ params }) {
   const { id } = params;
+
+  // --- UPDATED PRISMA QUERY ---
+  // We now `include` the related media files so we can pass them to the form.
   const property = await prisma.property.findUnique({
     where: { id },
+    include: {
+      media: {
+        orderBy: {
+          createdAt: 'asc' // Optional: order the media files
+        }
+      }
+    },
   });
 
   if (!property) {
