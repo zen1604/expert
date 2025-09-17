@@ -1,5 +1,5 @@
 // app/properties/[id]/page.js
-import prisma from '../../../../lib/prisma';
+import prisma from '../../../lib/prisma';
 import { notFound } from 'next/navigation';
 import styles from './property-page.module.css';
 import Link from 'next/link';
