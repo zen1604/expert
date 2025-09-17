@@ -6,9 +6,19 @@ generator client {
 
 datasource db {
   provider     = "postgresql"
-  // This is the corrected line
-  url          = env("POSTGRES_PRISMA_URL") 
+  url          = env("POSTGRES_PRISMA_URL")
   relationMode = "prisma"
+}
+
+// This new model will store the URLs for all additional media.
+model Media {
+  id         String   @id @default(cuid())
+  url        String
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([propertyId])
 }
 
 model Property {
@@ -18,12 +28,16 @@ model Property {
 
   address     String
   city        String
-  price       String   
+  price       String
   category    String
   listingType String   @map("type")
-  status      String   
-  imgUrl      String
-  details     String?  
+  status      String
+  imgUrl      String   // This will be the main "featured" image
+  details     String?
+  
+  // --- NEW FIELDS ---
+  isVisible   Boolean  @default(true) // For making listings visible/invisible
+  media       Media[]  // This creates the relationship to multiple media files
 
   @@index([listingType, status])
 }
