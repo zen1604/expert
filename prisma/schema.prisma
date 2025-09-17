@@ -6,19 +6,16 @@ generator client {
 
 datasource db {
   provider     = "postgresql"
-  url          = env("POSTGRES_PRISMA_URL")
+  url          = env("POSTRES_PRISMA_URL")
   relationMode = "prisma"
 }
 
-// New model to store multiple image URLs for each property
 model Media {
   id         String   @id @default(cuid())
   url        String
   propertyId String
-  // This relation ensures that if a Property is deleted, all its Media records are also deleted.
   property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
-
   @@index([propertyId])
 }
 
@@ -26,19 +23,54 @@ model Property {
   id          String   @id @default(cuid())
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   address     String
   city        String
-  price       String
+  price       String // This will now be "Asking Price"
   category    String
   listingType String   @map("type")
   status      String
-  imgUrl      String   // This remains as the main "featured" image
-  details     String?
+  imgUrl      String   // The featured image
+  details     String?  // The main description
+  isVisible   Boolean  @default(true)
+  media       Media[]
 
-  // --- NEW FIELDS ADDED HERE ---
-  isVisible   Boolean  @default(true) // For making listings visible/invisible to the public
-  media       Media[]  // This creates the one-to-many relationship to the Media model
+  // --- NEW SPECIFICATION FIELDS ---
+  minSizeSqFt       String?
+  maxSizeSqFt       String?
+  clearHeightFeet   String?
+  truckLevelDoors   String?
+  driveInDoors      String?
+  parking           String?
+  yearOfConstruction String?
+  zoning            String?
+  electricalEntry   String?
+  officeAC          Boolean? @default(false)
+  sprinklers        Boolean? @default(false)
+  warehouseHeating  String?
+  officeHeating     String?
+  buildingType      String?
+  premisesType      String?
+  dimensionsFeet    String?
+  columnSpansFeet   String?
+  landAreaSqFt      String?
+  feetSqFt          String? // Unclear field from screenshot, added for completeness
+
+  // --- NEW AREA BREAKDOWN FIELDS ---
+  areaOfficeSqFt    String?
+  areaWarehouseSqFt String?
+  areaMezzanineSqFt String?
+  areaTotalSqFt     String?
+
+  // --- NEW FINANCIAL FIELDS ---
+  pricePerSqFt      String?
+  assessmentYear    String?
+  assessmentLand    String?
+  assessmentBuilding String?
+  assessmentTotal   String?
+  taxYear           String? // Assuming taxes are also for a specific year
+  taxMunicipal      String?
+  taxSchool         String?
+  taxTotal          String?
 
   @@index([listingType, status])
 }
