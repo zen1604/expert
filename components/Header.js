@@ -4,17 +4,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation'; // Import usePathname
+import { usePathname } from 'next/navigation';
+import styles from './Header.module.css'; // <-- Import the new CSS Module
 
 export default function Header() {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const pathname = usePathname(); // Get the current path
+    const pathname = usePathname();
 
     useEffect(() => {
-        const handleScroll = () => {
-            setIsScrolled(window.scrollY > 50);
-        };
+        const handleScroll = () => setIsScrolled(window.scrollY > 50);
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
@@ -36,18 +35,19 @@ export default function Header() {
     return (
         <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
             <div className="container">
-                <Link href="/" className="logo">
+                {/* Use the specific class from the CSS module */}
+                <Link href="/" className={styles.logo}>
                     <Image
-                        className="logo-image"      // This class enables the filter
-                        src="/logo.svg"             // Using your SVG file
+                        className="logo-image" // This global class is for the dark mode filter
+                        src="/logo.jpg"
                         alt="l'eXpert Logo"
-                        width={150}                 // Change to your logo's actual width
-                        height={40}                 // Change to your logo's actual height
+                        width={150}
+                        height={40}
                         priority
                     />
                 </Link>
+                
                 <nav className="nav-menu">
-                    {/* Dynamically set the 'active' class */}
                     <Link href="/properties" className={pathname === '/properties' ? 'active' : ''}>Properties</Link>
                     <Link href="/about" className={pathname === '/about' ? 'active' : ''}>About</Link>
                     <Link href="/contact" className={pathname === '/contact' ? 'active' : ''}>Contact</Link>
@@ -73,4 +73,3 @@ export default function Header() {
         </header>
     );
 }
-
