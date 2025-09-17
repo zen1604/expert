@@ -1,0 +1,25 @@
+/* components/Header.module.css */
+
+.logo {
+    /* --- Styles for the logo link itself --- */
+    font-size: 26px; 
+    font-weight: 700; 
+    letter-spacing: 1px; 
+    color: var(--accent-primary); 
+    border: 3px solid var(--accent-primary); 
+    padding: 6px 12px; 
+    text-decoration: none;
+    
+    /* --- Helper styles for image alignment --- */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* --- THE DEFINITIVE FIX for the focus outline --- */
+/* This is highly specific and will override browser defaults */
+.logo:focus, 
+.logo:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
