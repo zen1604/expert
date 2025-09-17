@@ -11,13 +11,14 @@ export default function Footer() {
             <div className="container">
                 <div className={styles.footerContent}>
                     <div className={styles.footerBrand}>
-                        <Link href="/" className="logo">
+                        {/* Use the specific class from the footer's CSS module */}
+                        <Link href="/" className={styles.logo}>
                             <Image
-                                className="logo-image" // This class enables the filter
-                                src="/logo.svg"        // Using your SVG file
+                                className="logo-image" // This global class is for the dark mode filter
+                                src="/logo.jpg"
                                 alt="l'eXpert Logo"
-                                width={150}            // Change to your logo's actual width
-                                height={40}            // Change to your logo's actual height
+                                width={150}
+                                height={40}
                             />
                         </Link>
                         <p className={styles.footerSlogan}>Your expert in commercial real estate.</p>
@@ -34,7 +35,10 @@ export default function Footer() {
                     <div className={styles.footerContact}>
                         <h4>Contact Info</h4>
                         <p><i className="fa-solid fa-phone"></i> 438-527-2765</p>
-                        <p><i className="fa-solid fa-envelope"></i> azouaou.cherik@exprealty.com</p>
+                        <p>
+                            <i className="fa-solid fa-envelope"></i> 
+                            <a href="mailto:azouaou.cherik@exprealty.com">azouaou.cherik@exprealty.com</a>
+                        </p>
                         <p><i className="fa-solid fa-location-dot"></i> Montreal, QC, Canada</p>
                     </div>
                 </div>
