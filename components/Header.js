@@ -2,15 +2,15 @@
 'use client'; 
 
 import Link from 'next/link';
+import Image from 'next/image'; // 1. Import the Image component
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation'; // Import usePathname
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
-    const pathname = usePathname(); // Get the current path
+    const pathname = usePathname();
 
-    // ... (keep the useEffect hooks for scroll and theme the same) ...
     useEffect(() => {
         const handleScroll = () => {
             setIsScrolled(window.scrollY > 50);
@@ -36,16 +36,23 @@ export default function Header() {
     return (
         <header className={`header ${isScrolled ? 'scrolled' : ''}`}>
             <div className="container">
-                <Link href="/" className="logo">l<span>e</span>Xpert</Link>
+                {/* 2. Replace the text logo with the Image component */}
+                <Link href="/" className="logo">
+                    <Image
+                        src="/logo.jpg"      // The path to your logo in the public folder
+                        alt="l'eXpert Logo"  // Important for accessibility
+                        width={150}          // IMPORTANT: Change to your logo's actual width
+                        height={40}          // IMPORTANT: Change to your logo's actual height
+                        priority             // Tells Next.js to load the logo first
+                    />
+                </Link>
                 <nav className="nav-menu">
-                    {/* Dynamically set the 'active' class */}
                     <Link href="/properties" className={pathname === '/properties' ? 'active' : ''}>Properties</Link>
                     <Link href="/about" className={pathname === '/about' ? 'active' : ''}>About</Link>
                     <Link href="/contact" className={pathname === '/contact' ? 'active' : ''}>Contact</Link>
                 </nav>
                 <div className="header-controls">
-                    {/* ... (keep the phone number and theme switch the same) ... */}
-                    <a href="tel:514-955-0000" className="phone-number">514-955-0000</a>
+                    <a href="tel:438-527-2765" className="phone-number">438-527-2765</a>
                     <div className="theme-switch-wrapper">
                         <label className="theme-switch">
                             <input 
