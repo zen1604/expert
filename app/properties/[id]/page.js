@@ -4,11 +4,14 @@
 import { useState, useEffect } from 'react';
 import styles from './property-page.module.css';
 import Link from 'next/link';
-import ImageLightbox from '../../../../components/ImageLightbox'; // Adjust path if needed
+import ImageLightbox from '../../../../components/ImageLightbox'; // Adjust path if your components folder is elsewhere
 
-// Helper component for specification items
+// Helper component for rendering specification items conditionally
 const SpecItem = ({ label, value }) => {
+    // Return null if the value is null, undefined, or an empty string.
+    // Allow boolean `false` to be rendered (as '✗').
     if (!value && typeof value !== 'boolean') return null;
+
     return (
         <div className={styles.specItem}>
             <span className={styles.specLabel}>{label}</span>
@@ -20,21 +23,35 @@ const SpecItem = ({ label, value }) => {
 export default function PropertyDetailsPage({ params }) {
     const [property, setProperty] = useState(null);
     const [lightboxIndex, setLightboxIndex] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     
-    // Fetch data on the client side
+    // Fetch data on the client side using the API route
     useEffect(() => {
         const fetchProperty = async () => {
-            const res = await fetch(`/api/properties/${params.id}`); // We will need to create this API route
-            if (res.ok) {
-                const data = await res.json();
-                setProperty(data);
+            setIsLoading(true);
+            try {
+                const res = await fetch(`/api/properties/${params.id}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    setProperty(data);
+                } else {
+                    setProperty(null); // Handle not found case
+                }
+            } catch (error) {
+                console.error("Failed to fetch property:", error);
+                setProperty(null);
             }
+            setIsLoading(false);
         };
         fetchProperty();
     }, [params.id]);
 
+    if (isLoading) {
+        return <div className="container" style={{padding: '50px 0', textAlign: 'center'}}>Loading Property Details...</div>;
+    }
+
     if (!property) {
-        return <div className="container">Loading...</div>; // Or a proper loading skeleton
+        return <div className="container" style={{padding: '50px 0', textAlign: 'center'}}>Property not found. It may have been removed or is not currently visible.</div>;
     }
     
     const allImages = [property.imgUrl, ...property.media.map(m => m.url)].filter(Boolean);
@@ -50,9 +67,11 @@ export default function PropertyDetailsPage({ params }) {
                 <div className="container">
                     <Link href="/properties" className={styles.backLink}>&larr; Back to All Properties</Link>
                     
-                    <div className={styles.mainDescription}>
-                        <p>{property.details}</p>
-                    </div>
+                    {property.details && (
+                        <div className={styles.mainDescription}>
+                            <p>{property.details}</p>
+                        </div>
+                    )}
 
                     <div className={styles.section}>
                         <h2 className={styles.sectionTitle}>Property Specifications</h2>
@@ -117,47 +136,20 @@ export default function PropertyDetailsPage({ params }) {
                         </div>
                     </div>
 
-                    <div className={styles.section}>
-                        <h2 className={styles.sectionTitle}>Gallery</h2>
-                        <div className={styles.galleryGrid}>
-                            {allImages.map((url, index) => (
-                                <img key={index} src={url} alt={`Property image ${index + 1}`} loading="lazy" onClick={() => openLightbox(index)} />
-                            ))}
+                    {allImages.length > 0 && (
+                        <div className={styles.section}>
+                            <h2 className={styles.sectionTitle}>Gallery</h2>
+                            <div className={styles.galleryGrid}>
+                                {allImages.map((url, index) => (
+                                    <img key={index} src={url} alt={`Property image ${index + 1}`} loading="lazy" onClick={() => openLightbox(index)} />
+                                ))}
+                            </div>
                         </div>
-                    </div>
+                    )}
 
                 </div>
             </main>
             {lightboxIndex !== null && <ImageLightbox images={allImages} startIndex={lightboxIndex} onClose={closeLightbox} />}
         </>
     );
-}```
-
-**IMPORTANT:** The page above now fetches data from an API route. You need to create this route.
-
-**File: `app/api/properties/[id]/route.js` (New File)**
-
-```javascript
-// app/api/properties/[id]/route.js
-import { NextResponse } from 'next/server';
-import prisma from '../../../../lib/prisma'; // Adjust path if needed
-
-export async function GET(request, { params }) {
-    const { id } = params;
-    try {
-        const property = await prisma.property.findUnique({
-            where: { id: id, isVisible: true },
-            include: {
-                media: { orderBy: { createdAt: 'asc' } },
-            },
-        });
-
-        if (!property) {
-            return new NextResponse('Property not found', { status: 404 });
-        }
-        return NextResponse.json(property);
-    } catch (error) {
-        console.error("API Error fetching property:", error);
-        return new NextResponse('Internal Server Error', { status: 500 });
-    }
 }
