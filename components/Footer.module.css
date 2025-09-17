@@ -13,9 +13,26 @@
     margin-bottom: 40px;
 }
 
-.footerBrand .logo {
-    display: inline-block;
+/* --- LOGO STYLES FOR FOOTER --- */
+.logo {
+    /* Style the link to look like the logo box */
+    font-size: 26px; 
+    font-weight: 700; 
+    letter-spacing: 1px; 
+    color: var(--accent-primary); 
+    border: 3px solid var(--accent-primary); 
+    padding: 6px 12px; 
+    text-decoration: none;
+    display: inline-flex; /* Use flex to center the image */
+    align-items: center;
     margin-bottom: 15px;
+}
+
+/* --- THE DEFINITIVE FIX for the focus outline in the Footer --- */
+.logo:focus, 
+.logo:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
 }
 
 .footerSlogan {
@@ -54,6 +71,16 @@
 .footerContact p {
     font-size: 15px;
     margin-bottom: 12px;
+}
+
+.footerContact p a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footerContact p a:hover {
+    color: var(--accent-primary);
 }
 
 .footerContact i {
