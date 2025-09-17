@@ -15,15 +15,9 @@
 
 /* --- LOGO STYLES FOR FOOTER --- */
 .logo {
-    /* Style the link to look like the logo box */
-    font-size: 26px; 
-    font-weight: 700; 
-    letter-spacing: 1px; 
-    color: var(--accent-primary); 
-    border: 3px solid var(--accent-primary); 
-    padding: 6px 12px; 
+    /* The border and padding rules have been REMOVED. */
     text-decoration: none;
-    display: inline-flex; /* Use flex to center the image */
+    display: inline-flex;
     align-items: center;
     margin-bottom: 15px;
 }
