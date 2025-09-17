@@ -143,3 +143,94 @@
     font-size: 16px;
     cursor: pointer;
 }
+
+/* APPEND these styles to the END of app/admin/admin.module.css */
+
+/* Media Gallery in Form */
+.mediaGrid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: var(--bg-secondary);
+    border-radius: 5px;
+    border: 1px solid var(--border-color);
+}
+.mediaItem {
+    position: relative;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 120px;
+    height: 90px;
+    flex-shrink: 0;
+}
+.mediaItem img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+.deleteMediaButton {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    background-color: rgba(220, 53, 69, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: background-color 0.2s;
+}
+.deleteMediaButton:hover {
+    background-color: rgb(220, 53, 69);
+}
+
+/* Visibility Toggle Switch */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+input:checked + .slider {
+    background-color: var(--accent-primary);
+}
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
