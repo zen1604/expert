@@ -1,0 +1,81 @@
+/* app/properties/[id]/property-page.module.css */
+
+.pageHeaderCustom {
+    padding: 80px 0;
+    text-align: center;
+    color: white;
+    background-size: cover;
+    background-position: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.backLink {
+    display: inline-block;
+    margin-bottom: 30px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--accent-primary);
+    transition: color 0.2s;
+}
+
+.backLink:hover {
+    color: var(--text-primary);
+}
+
+.propertyLayout {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); /* Flexible columns */
+    gap: 50px;
+}
+
+.propertyDetails h2,
+.propertyMedia h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--accent-primary);
+    padding-bottom: 10px;
+}
+
+.detailItem {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    display: flex;
+}
+
+.detailItem strong {
+    width: 120px;
+    flex-shrink: 0;
+    color: var(--text-secondary);
+}
+
+.descriptionText {
+    white-space: pre-wrap; /* This is the key for preserving line breaks */
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.galleryGrid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+}
+
+.galleryGrid img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.galleryGrid a:hover img {
+    transform: scale(1.03);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+    .propertyLayout {
+        grid-template-columns: 1fr;
+    }
+}
