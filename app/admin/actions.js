@@ -9,7 +9,7 @@ import { put, del } from '@vercel/blob';
 import prisma from '../../lib/prisma';
 import { sessionOptions } from '../../lib/session';
 
-// --- LOGOUT ACTION (from before) ---
+// --- LOGOUT ACTION (No changes) ---
 export async function logout() {
   const session = await getIronSession(cookies(), sessionOptions);
   session.destroy();
@@ -20,7 +20,8 @@ export async function logout() {
 export async function upsertProperty(formData) {
   const id = formData.get('id');
   const oldImgUrl = formData.get('oldImgUrl');
-  const imageFile = formData.get('image');
+  const mainImageFile = formData.get('image');
+  const mediaFiles = formData.getAll('media'); // Get all extra media files
 
   const data = {
     address: formData.get('address'),
@@ -30,62 +31,82 @@ export async function upsertProperty(formData) {
     listingType: formData.get('listingType'),
     status: formData.get('status'),
     details: formData.get('details'),
+    isVisible: formData.get('isVisible') === 'on', // Handle checkbox
   };
 
-  let imageUrl = oldImgUrl; // Default to old image URL
-
-  // If a new image file is uploaded
-  if (imageFile && imageFile.size > 0) {
-    // 1. Upload the new image to Vercel Blob
-    const blob = await put(imageFile.name, imageFile, {
-      access: 'public',
-    });
-    imageUrl = blob.url; // Get the URL of the new image
-
-    // 2. If this was an edit, delete the old image
+  // --- 1. Handle Main Featured Image ---
+  let mainImageUrl = oldImgUrl;
+  if (mainImageFile && mainImageFile.size > 0) {
+    const blob = await put(mainImageFile.name, mainImageFile, { access: 'public' });
+    mainImageUrl = blob.url;
     if (oldImgUrl) {
-      await del(oldImgUrl);
+      await del(oldImgUrl).catch(err => console.error("Failed to delete old image:", err));
     }
   }
+  data.imgUrl = mainImageUrl;
 
-  // Add the final image URL to our data object
-  data.imgUrl = imageUrl;
-
+  // --- 2. Handle Property Record (Create or Update) ---
+  let propertyId = id;
   if (id) {
-    // Update existing property
-    await prisma.property.update({
-      where: { id },
-      data,
-    });
+    await prisma.property.update({ where: { id }, data });
   } else {
-    // Create new property
-    await prisma.property.create({
-      data,
-    });
+    const newProperty = await prisma.property.create({ data });
+    propertyId = newProperty.id;
   }
 
-  // Clear the cache for the public properties page to show the update instantly
+  // --- 3. Handle Multiple Media Files Upload ---
+  if (mediaFiles && mediaFiles.length > 0 && mediaFiles[0].size > 0) {
+    const mediaUploadPromises = mediaFiles.map(file => put(file.name, file, { access: 'public' }));
+    const blobs = await Promise.all(mediaUploadPromises);
+    
+    const mediaCreateData = blobs.map(blob => ({
+      url: blob.url,
+      propertyId: propertyId,
+    }));
+
+    await prisma.media.createMany({ data: mediaCreateData });
+  }
+
+  // Revalidate all relevant paths
   revalidatePath('/properties');
-  // Redirect back to the admin dashboard
+  revalidatePath(`/properties/${propertyId}`);
+  revalidatePath('/admin');
   redirect('/admin');
 }
 
-
-// --- DELETE ACTION ---
-export async function deleteProperty(id, imgUrl) {
-    if (!id || !imgUrl) {
-        throw new Error('ID and Image URL are required to delete a property.');
+// --- NEW ACTION: DELETE A SINGLE MEDIA ITEM ---
+export async function deleteMedia(mediaId, mediaUrl) {
+    if (!mediaId || !mediaUrl) return;
+    try {
+        await del(mediaUrl); // Delete from Vercel Blob
+        await prisma.media.delete({ where: { id: mediaId } }); // Delete from DB
+        revalidatePath('/admin'); // Revalidate admin pages
+    } catch (error) {
+        console.error("Failed to delete media:", error);
     }
+}
 
-    // 1. Delete the image from Vercel Blob
-    await del(imgUrl);
+// --- UPDATED DELETE PROPERTY ACTION ---
+export async function deleteProperty(id) {
+    if (!id) throw new Error('ID is required to delete a property.');
 
-    // 2. Delete the property record from the database
-    await prisma.property.delete({
+    const property = await prisma.property.findUnique({
         where: { id },
+        include: { media: true },
     });
 
-    // 3. Revalidate the public properties page cache
+    if (!property) throw new Error('Property not found.');
+
+    const urlsToDelete = [property.imgUrl, ...property.media.map(m => m.url)].filter(Boolean);
+    
+    if (urlsToDelete.length > 0) {
+        await del(urlsToDelete).catch(err => console.error("Failed to delete blob images:", err));
+    }
+
+    // Because of `onDelete: Cascade` in the schema, deleting the property
+    // will automatically delete all associated media records from the database.
+    await prisma.property.delete({ where: { id } });
+
     revalidatePath('/properties');
-    revalidatePath('/admin'); // Also revalidate the admin page
+    revalidatePath('/admin');
 }
