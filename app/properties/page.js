@@ -5,8 +5,12 @@ import PropertyListings from './PropertyListings';
 
 // This is an async Server Component
 export default async function PropertiesPage() {
-    // 1. Fetch live data directly from the database
+    // --- UPDATED PRISMA QUERY ---
+    // Fetch live data directly from the database, but only where `isVisible` is true.
     const properties = await prisma.property.findMany({
+        where: {
+            isVisible: true,
+        },
         orderBy: {
             createdAt: 'desc', // Show newest properties first
         },
@@ -31,7 +35,7 @@ export default async function PropertiesPage() {
 
             <main className="main-content">
                 <div className="container">
-                    {/* 2. Pass the fetched data to the interactive client component */}
+                    {/* Pass the filtered and formatted data to the interactive client component */}
                     <PropertyListings properties={formattedProperties} />
                 </div>
             </main>
