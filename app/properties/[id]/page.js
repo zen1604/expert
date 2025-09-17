@@ -4,7 +4,7 @@
 import { useState, useEffect } from 'react';
 import styles from './property-page.module.css';
 import Link from 'next/link';
-import ImageLightbox from '../../../../components/ImageLightBox.js'; // Adjust path if your components folder is elsewhere
+import ImageLightbox from '../../../components/ImageLightBox.js'; // Adjust path if your components folder is elsewhere
 
 // Helper component for rendering specification items conditionally
 const SpecItem = ({ label, value }) => {
