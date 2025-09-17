@@ -234,3 +234,19 @@ input:checked + .slider {
 input:checked + .slider:before {
     transform: translateX(26px);
 }
+
+/* APPEND to app/admin/admin.module.css */
+.formSection { margin-bottom: 40px; border-bottom: 1px solid var(--border-color); padding-bottom: 30px; }
+.formSection h2 { margin-top: 0; }
+.imageUploader { margin-top: 20px; }
+.imagePreviewGrid { display: flex; flex-wrap: wrap; gap: 15px; }
+.imagePreviewItem { position: relative; width: 150px; height: 110px; border-radius: 8px; overflow: hidden; border: 2px dashed var(--border-color); cursor: grab; }
+.imagePreviewItem img { width: 100%; height: 100%; object-fit: cover; }
+.removeImageBtn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 24px; height: 24px; font-size: 16px; cursor: pointer; }
+.imageOrderBadge { position: absolute; bottom: 4px; left: 4px; background: rgba(0,0,0,0.6); color: white; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+.imageMainBadge { position: absolute; top: 4px; left: 4px; background: var(--accent-primary); color: white; padding: 2px 6px; font-size: 10px; border-radius: 4px; font-weight: bold; }
+.uploadBox { width: 150px; height: 110px; }
+.fileInput { display: none; }
+.uploadLabel { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; border: 2px dashed var(--border-color); border-radius: 8px; cursor: pointer; font-weight: 600; color: var(--text-secondary); }
+.formGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
+.checkboxLabel { display: flex; align-items: center; gap: 10px; }
