@@ -65,6 +65,8 @@ body.dark-mode .header.scrolled {
     justify-content: space-between; 
     align-items: center;
 }
+
+/* --- LOGO STYLES (INCLUDING FIXES) --- */
 .logo {
     font-size: 26px; 
     font-weight: 700; 
@@ -73,11 +75,27 @@ body.dark-mode .header.scrolled {
     border: 3px solid var(--accent-primary); 
     padding: 6px 12px; 
     text-decoration: none;
+    display: inline-flex; /* Helps align the image inside */
+    align-items: center;
 }
 .logo span {
     color: var(--price-red);
     font-weight: 700;
 }
+/* Forcefully removes the focus outline on click/focus for all users. */
+.logo:focus, .logo:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+/* This class is on the <Image> component for the dark mode filter */
+.logo-image {
+    transition: filter 0.3s ease-in-out;
+}
+/* When dark mode is active, apply the luminance inversion filter to the logo */
+.dark-mode .logo-image {
+    filter: invert(1) hue-rotate(180deg);
+}
+
 .nav-menu {
     display: flex; 
     align-items: center;
@@ -299,7 +317,7 @@ input:checked + .slider:before {
     margin-top: 20px; 
     padding-top: 15px; 
     border-top: 1px solid var(--border-color); 
-    align-self: flex-end; /* This was incorrect in the original CSS, fixed now */
+    align-self: flex-end;
 }
 
 /* --- Modal & Responsive Styles --- */
@@ -363,8 +381,6 @@ input:checked + .slider:before {
 
 }
 
-/* APPEND THIS TO styles/globals.css */
-
 /* --- General Page & Section Styles --- */
 .page-header {
     background-color: var(--bg-secondary);
@@ -372,17 +388,14 @@ input:checked + .slider:before {
     text-align: center;
     border-bottom: 1px solid var(--border-color);
 }
-
 .page-header h1 {
     font-size: 36px;
     color: var(--text-primary);
     font-weight: 600;
 }
-
 .page-section {
     padding: 60px 0;
 }
-
 .section-title {
     font-size: 28px;
     font-weight: 600;
@@ -390,7 +403,6 @@ input:checked + .slider:before {
     text-align: center;
     margin-bottom: 20px;
 }
-
 .section-intro {
     font-size: 18px;
     color: var(--text-secondary);
@@ -398,15 +410,12 @@ input:checked + .slider:before {
     max-width: 700px;
     margin: 0 auto 40px auto;
 }
-
 p {
     line-height: 1.7;
 }
-
 .text-center {
     text-align: center;
 }
-
 .cta-button {
     display: inline-block;
     background-color: var(--accent-primary);
@@ -418,12 +427,10 @@ p {
     font-size: 16px;
     transition: transform 0.3s, box-shadow 0.3s;
 }
-
 .cta-button:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 15px rgba(0,0,0,0.15);
 }
-
 
 /* --- Contact Form Styles --- */
 .contact-form {
@@ -434,11 +441,9 @@ p {
     border-radius: 8px;
     border: 1px solid var(--border-color);
 }
-
 .form-group {
     margin-bottom: 25px;
 }
-
 .form-group label {
     display: block;
     font-weight: 600;
@@ -446,7 +451,6 @@ p {
     font-size: 14px;
     color: var(--text-primary);
 }
-
 .form-group input,
 .form-group textarea {
     width: 100%;
@@ -458,13 +462,11 @@ p {
     font-family: 'Montserrat', sans-serif;
     font-size: 16px;
 }
-
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
     border-color: var(--accent-primary);
 }
-
 .success-message {
     text-align: center;
     padding: 20px;
@@ -475,7 +477,7 @@ p {
     font-weight: 500;
 }
 
-/* APPEND to styles/globals.css */
+/* --- Image Lightbox Styles --- */
 .lightbox-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; align-items: center; justify-content: center; z-index: 1000; }
 .lightbox-overlay img { max-width: 90vw; max-height: 85vh; user-select: none; }
 .lightbox-close { position: fixed; top: 20px; right: 30px; font-size: 40px; color: #fff; background: none; border: none; cursor: pointer; }
@@ -483,26 +485,3 @@ p {
 .lightbox-prev { left: 20px; }
 .lightbox-next { right: 20px; }
 .lightbox-counter { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.5); color: white; padding: 5px 15px; border-radius: 5px; user-select: none; }
-
-/* APPEND to styles/globals.css */
-
-/* 1. Add a class for the logo image to apply the filter */
-.logo-image {
-    /* This makes the color change smooth instead of an instant flip */
-    transition: filter 0.3s ease-in-out;
-}
-
-/* 2. When dark mode is active, apply the luminance inversion filter to the logo */
-.dark-mode .logo-image {
-    filter: invert(1) hue-rotate(180deg);
-}
-
-/* 3. Remove the default focus outline and add a better one for keyboard users */
-.logo:focus {
-    outline: none;
-}
-.logo:focus-visible {
-    outline: 2px auto var(--accent-primary);
-    outline-offset: 2px;
-    border-radius: 4px;
-}
