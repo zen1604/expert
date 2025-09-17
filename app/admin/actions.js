@@ -9,107 +9,105 @@ import { put, del } from '@vercel/blob';
 import prisma from '../../lib/prisma';
 import { sessionOptions } from '../../lib/session';
 
-// --- LOGOUT ACTION (No changes) ---
 export async function logout() {
   const session = await getIronSession(cookies(), sessionOptions);
   session.destroy();
   redirect('/login');
 }
 
-// --- UPDATED CREATE / UPDATE ACTION ---
-export async function upsertProperty(formData) {
-  const id = formData.get('id');
-  const oldImgUrl = formData.get('oldImgUrl');
-  const mainImageFile = formData.get('image');
-  const mediaFiles = formData.getAll('media'); // Get all extra media files as an array
-
-  const data = {
-    address: formData.get('address'),
-    city: formData.get('city'),
-    price: formData.get('price'),
-    category: formData.get('category'),
-    listingType: formData.get('listingType'),
-    status: formData.get('status'),
-    details: formData.get('details'),
-    isVisible: formData.get('isVisible') === 'on', // Checkbox value is 'on' when checked
-  };
-
-  // --- 1. Handle Main Featured Image ---
-  let mainImageUrl = oldImgUrl;
-  if (mainImageFile && mainImageFile.size > 0) {
-    const blob = await put(mainImageFile.name, mainImageFile, { access: 'public' });
-    mainImageUrl = blob.url;
-    if (oldImgUrl) {
-      // Use catch to prevent crash if old image doesn't exist for some reason
-      await del(oldImgUrl).catch(err => console.error("Failed to delete old image:", err));
+// NEW ACTION: Handles uploading files on-the-fly from the admin form
+export async function uploadImagesAction(formData) {
+    const files = formData.getAll('files');
+    if (!files || files.length === 0) {
+        return { success: false, error: 'No files provided.' };
     }
-  }
-  data.imgUrl = mainImageUrl;
 
-  // --- 2. Handle Property Record (Create or Update) ---
-  let propertyId = id;
-  if (id) {
-    await prisma.property.update({ where: { id }, data });
-  } else {
-    const newProperty = await prisma.property.create({ data });
-    propertyId = newProperty.id; // Get the ID for the new media files
-  }
-
-  // --- 3. Handle Multiple Media Files Upload ---
-  if (mediaFiles && mediaFiles.length > 0 && mediaFiles[0].size > 0) {
-    const mediaUploadPromises = mediaFiles.map(file => put(file.name, file, { access: 'public' }));
-    const blobs = await Promise.all(mediaUploadPromises);
-    
-    const mediaCreateData = blobs.map(blob => ({
-      url: blob.url,
-      propertyId: propertyId,
-    }));
-
-    await prisma.media.createMany({ data: mediaCreateData });
-  }
-
-  // Revalidate all relevant paths to reflect changes immediately
-  revalidatePath('/properties');
-  revalidatePath(`/properties/${propertyId}`); // For the new individual property page
-  revalidatePath('/admin');
-  redirect('/admin');
-}
-
-// --- NEW ACTION: DELETE A SINGLE MEDIA ITEM ---
-export async function deleteMedia(mediaId, mediaUrl) {
-    if (!mediaId || !mediaUrl) return;
     try {
-        await del(mediaUrl); // Delete from Vercel Blob
-        await prisma.media.delete({ where: { id: mediaId } }); // Delete from DB
-        revalidatePath('/admin'); // Revalidate admin pages to show the change
+        const blobs = await Promise.all(
+            files.map(file => put(file.name, file, { access: 'public' }))
+        );
+        const urls = blobs.map(blob => blob.url);
+        return { success: true, urls };
     } catch (error) {
-        console.error("Failed to delete media:", error);
-        // You might want to return an error object here in a real app
+        console.error('Image upload failed:', error);
+        return { success: false, error: 'Image upload failed.' };
     }
 }
 
-// --- UPDATED DELETE PROPERTY ACTION ---
-export async function deleteProperty(id) {
-    if (!id) throw new Error('ID is required to delete a property.');
-
-    const property = await prisma.property.findUnique({
-        where: { id },
-        include: { media: true }, // Get all associated media
-    });
-
-    if (!property) throw new Error('Property not found.');
-
-    // Create a list of all URLs to delete (main image + all gallery images)
-    const urlsToDelete = [property.imgUrl, ...property.media.map(m => m.url)].filter(Boolean);
+// HEAVILY MODIFIED: Now accepts image URLs and all new fields
+export async function upsertProperty(formData) {
+    const id = formData.get('id');
     
-    if (urlsToDelete.length > 0) {
-        await del(urlsToDelete).catch(err => console.error("Failed to delete blob images:", err));
+    // Image URLs are now passed as a comma-separated string
+    const imageUrls = formData.get('imageUrls')?.split(',').filter(Boolean) || [];
+    const mainImageUrl = imageUrls[0] || ''; // The first image is the main one
+    const mediaImageUrls = imageUrls.slice(1); // The rest are for the gallery
+
+    const data = {
+        address: formData.get('address'), city: formData.get('city'), price: formData.get('price'), category: formData.get('category'),
+        listingType: formData.get('listingType'), status: formData.get('status'), details: formData.get('details'),
+        isVisible: formData.get('isVisible') === 'on', imgUrl: mainImageUrl,
+
+        minSizeSqFt: formData.get('minSizeSqFt'), maxSizeSqFt: formData.get('maxSizeSqFt'), clearHeightFeet: formData.get('clearHeightFeet'),
+        truckLevelDoors: formData.get('truckLevelDoors'), driveInDoors: formData.get('driveInDoors'), parking: formData.get('parking'),
+        yearOfConstruction: formData.get('yearOfConstruction'), zoning: formData.get('zoning'), electricalEntry: formData.get('electricalEntry'),
+        warehouseHeating: formData.get('warehouseHeating'), officeHeating: formData.get('officeHeating'), buildingType: formData.get('buildingType'),
+        premisesType: formData.get('premisesType'), dimensionsFeet: formData.get('dimensionsFeet'), columnSpansFeet: formData.get('columnSpansFeet'),
+        landAreaSqFt: formData.get('landAreaSqFt'), feetSqFt: formData.get('feetSqFt'),
+
+        officeAC: formData.get('officeAC') === 'on', sprinklers: formData.get('sprinklers') === 'on',
+
+        areaOfficeSqFt: formData.get('areaOfficeSqFt'), areaWarehouseSqFt: formData.get('areaWarehouseSqFt'),
+        areaMezzanineSqFt: formData.get('areaMezzanineSqFt'), areaTotalSqFt: formData.get('areaTotalSqFt'),
+        
+        pricePerSqFt: formData.get('pricePerSqFt'), assessmentYear: formData.get('assessmentYear'), assessmentLand: formData.get('assessmentLand'),
+        assessmentBuilding: formData.get('assessmentBuilding'), assessmentTotal: formData.get('assessmentTotal'),
+        taxYear: formData.get('taxYear'), taxMunicipal: formData.get('taxMunicipal'), taxSchool: formData.get('taxSchool'), taxTotal: formData.get('taxTotal'),
+    };
+
+    let propertyId = id;
+    if (id) {
+        // UPDATE
+        const existingProperty = await prisma.property.findUnique({ where: { id }, include: { media: true } });
+        const existingMediaUrls = existingProperty.media.map(m => m.url);
+        
+        // Delete media that are no longer in the list
+        const mediaToDelete = existingProperty.media.filter(m => !mediaImageUrls.includes(m.url));
+        if (mediaToDelete.length > 0) {
+            await prisma.media.deleteMany({ where: { id: { in: mediaToDelete.map(m => m.id) } } });
+        }
+        
+        // Create media for new URLs
+        const newMediaUrls = mediaImageUrls.filter(url => !existingMediaUrls.includes(url));
+        if (newMediaUrls.length > 0) {
+            await prisma.media.createMany({ data: newMediaUrls.map(url => ({ url, propertyId: id })) });
+        }
+
+        await prisma.property.update({ where: { id }, data });
+    } else {
+        // CREATE
+        const newProperty = await prisma.property.create({ data });
+        propertyId = newProperty.id;
+        if (mediaImageUrls.length > 0) {
+            await prisma.media.createMany({ data: mediaImageUrls.map(url => ({ url, propertyId })) });
+        }
     }
 
-    // Thanks to `onDelete: Cascade` in the schema, Prisma will automatically
-    // delete all associated media records from the database when we delete the property.
-    await prisma.property.delete({ where: { id } });
+    revalidatePath('/properties');
+    revalidatePath(`/properties/${propertyId}`);
+    revalidatePath('/admin');
+    redirect('/admin');
+}
 
+export async function deleteProperty(id) {
+    if (!id) throw new Error('ID is required.');
+    const property = await prisma.property.findUnique({ where: { id }, include: { media: true } });
+    if (!property) throw new Error('Property not found.');
+    const urlsToDelete = [property.imgUrl, ...property.media.map(m => m.url)].filter(Boolean);
+    if (urlsToDelete.length > 0) {
+        await del(urlsToDelete).catch(err => console.error("Blob deletion failed:", err));
+    }
+    await prisma.property.delete({ where: { id } });
     revalidatePath('/properties');
     revalidatePath('/admin');
 }
