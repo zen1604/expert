@@ -6,6 +6,7 @@ import { useFormStatus } from 'react-dom';
 import styles from './admin.module.css';
 import { deleteMedia } from './actions';
 
+// --- Child component for the submit button ---
 function SubmitButton({ isEditing }) {
   const { pending } = useFormStatus();
   return (
@@ -15,6 +16,7 @@ function SubmitButton({ isEditing }) {
   );
 }
 
+// --- Child component for managing a single gallery image ---
 function MediaItem({ media }) {
     const [isDeleting, setIsDeleting] = useState(false);
     
@@ -22,34 +24,40 @@ function MediaItem({ media }) {
         if (window.confirm('Are you sure you want to delete this image?')) {
             setIsDeleting(true);
             await deleteMedia(media.id, media.url);
-            // The component will disappear on re-render, no need to set isDeleting back to false
+            // The page will revalidate and this component will disappear.
         }
     };
 
     return (
         <div className={styles.mediaItem}>
-            <a href={media.url} target="_blank" rel="noopener noreferrer">
+            <a href={media.url} target="_blank" rel="noopener noreferrer" title="View full image">
                 <img src={media.url} alt="Property media" />
             </a>
-            <button type="button" onClick={handleDelete} disabled={isDeleting} className={styles.deleteMediaButton}>
+            <button type="button" onClick={handleDelete} disabled={isDeleting} className={styles.deleteMediaButton} title="Delete Image">
                 {isDeleting ? '...' : '×'}
             </button>
         </div>
     );
 }
 
+// --- Main Form Component ---
 export default function PropertyForm({ property, formAction }) {
   const isEditing = !!property;
+  // State for the conditional dropdown
   const [listingType, setListingType] = useState(property?.listingType || 'FOR SALE');
 
+  // Effect to sync state if the property data changes (e.g., navigating between edit pages)
   useEffect(() => {
-    if (property?.listingType) setListingType(property.listingType);
+    if (property?.listingType) {
+      setListingType(property.listingType);
+    }
   }, [property]);
 
   return (
     <form action={formAction} className={styles.propertyForm}>
+      {/* Hidden inputs to pass essential data */}
       {isEditing && <input type="hidden" name="id" value={property.id} />}
-      {isEditing && <input type="hidden" name="oldImgUrl" value={property.imgUrl} />}
+      {isEditing && property.imgUrl && <input type="hidden" name="oldImgUrl" value={property.imgUrl} />}
 
       <div className={styles.formRow}>
         <div className={styles.formGroup}>
@@ -65,11 +73,11 @@ export default function PropertyForm({ property, formAction }) {
       <div className={styles.formRow}>
         <div className={styles.formGroup}>
           <label htmlFor="price">Price</label>
-          <input type="text" id="price" name="price" defaultValue={property?.price} required />
+          <input type="text" id="price" name="price" placeholder="$3,200,000 or $22 / sq ft" defaultValue={property?.price} required />
         </div>
         <div className={styles.formGroup}>
           <label htmlFor="category">Category</label>
-          <input type="text" id="category" name="category" defaultValue={property?.category} required />
+          <input type="text" id="category" name="category" placeholder="Industrial" defaultValue={property?.category} required />
         </div>
       </div>
       
@@ -85,6 +93,7 @@ export default function PropertyForm({ property, formAction }) {
           <label htmlFor="status">Status</label>
           <select id="status" name="status" defaultValue={property?.status} required>
             <option value="AVAILABLE">Available</option>
+            {/* These options render conditionally based on the `listingType` state */}
             {listingType === 'FOR SALE' && <option value="SOLD">Sold</option>}
             {listingType === 'FOR LEASE' && <option value="LEASED">Leased</option>}
           </select>
@@ -103,7 +112,7 @@ export default function PropertyForm({ property, formAction }) {
       </div>
       
       <div className={styles.formGroup}>
-        <label htmlFor="media">Additional Gallery Images</label>
+        <label htmlFor="media">Additional Gallery Images (select multiple)</label>
         <input type="file" id="media" name="media" accept="image/*" multiple />
         {isEditing && property.media?.length > 0 && (
           <>
