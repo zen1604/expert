@@ -1,6 +1,6 @@
 // components/Footer.js
 import Link from 'next/link';
-import Image from 'next/image'; // 1. Import the Image component
+import Image from 'next/image';
 import styles from './Footer.module.css';
 
 export default function Footer() {
@@ -11,13 +11,13 @@ export default function Footer() {
             <div className="container">
                 <div className={styles.footerContent}>
                     <div className={styles.footerBrand}>
-                        {/* 2. Replace the text logo with the Image component */}
                         <Link href="/" className="logo">
                             <Image
-                                src="/logo.jpg"      // The path to your logo
-                                alt="l'eXpert Logo"  // Alt text
-                                width={150}          // IMPORTANT: Change to your logo's actual width
-                                height={40}          // IMPORTANT: Change to your logo's actual height
+                                className="logo-image" // This class enables the filter
+                                src="/logo.jpg"        // Using your JPG file
+                                alt="l'eXpert Logo"
+                                width={150}            // Change to your logo's actual width
+                                height={40}            // Change to your logo's actual height
                             />
                         </Link>
                         <p className={styles.footerSlogan}>Your expert in commercial real estate.</p>
@@ -33,8 +33,8 @@ export default function Footer() {
                     </div>
                     <div className={styles.footerContact}>
                         <h4>Contact Info</h4>
-                        <p><i className="fa-solid fa-phone"></i> 438-527-2765</p>
-                        <p><i className="fa-solid fa-envelope"></i> azouaou.cherik@exprealty.com</p>
+                        <p><i className="fa-solid fa-phone"></i> 514-955-0000</p>
+                        <p><i className="fa-solid fa-envelope"></i> contact@lexpert.com</p>
                         <p><i className="fa-solid fa-location-dot"></i> Montreal, QC, Canada</p>
                     </div>
                 </div>
