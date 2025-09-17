@@ -7,9 +7,11 @@ import styles from './admin.module.css';
 
 export default function PropertyList({ properties }) {
 
-    const handleDelete = async (id, imgUrl) => {
-        if (window.confirm('Are you sure you want to delete this property? This action cannot be undone.')) {
-            await deleteProperty(id, imgUrl);
+    // --- UPDATED DELETE HANDLER ---
+    // It now only needs the property ID. The server action will find all associated image URLs.
+    const handleDelete = async (id) => {
+        if (window.confirm('Are you sure you want to delete this property? This will also delete all associated images.')) {
+            await deleteProperty(id);
         }
     };
     
@@ -37,7 +39,8 @@ export default function PropertyList({ properties }) {
                         <td><span className={`${styles.statusBadge} ${styles[prop.status.toLowerCase()]}`}>{prop.status}</span></td>
                         <td className={styles.actionsCell}>
                             <Link href={`/admin/property/${prop.id}/edit`} className={styles.editButton}>Edit</Link>
-                            <button onClick={() => handleDelete(prop.id, prop.imgUrl)} className={styles.deleteButton}>Delete</button>
+                            {/* The onClick now calls the simplified handler */}
+                            <button onClick={() => handleDelete(prop.id)} className={styles.deleteButton}>Delete</button>
                         </td>
                     </tr>
                 ))}
